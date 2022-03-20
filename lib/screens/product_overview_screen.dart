@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/providers/cart.dart';
 import 'package:flutter_complete_guide/screens/cart_screen.dart';
 import 'package:flutter_complete_guide/screens/orders_screen.dart';
+import 'package:flutter_complete_guide/widget/app_drawer.dart';
 import 'package:flutter_complete_guide/widget/badge.dart';
 import 'package:flutter_complete_guide/widget/products_grid.dart';
 import 'package:provider/provider.dart';
@@ -28,7 +29,9 @@ class _ProductOverViewScreenState extends State<ProductOverViewScreen> {
     return Scaffold(
 
       //adding a drawer in the app
-      drawer: Drawer(
+      drawer: Drawer(child: AppDrawer(),),
+
+      /* Drawer(
         child: Container(
           padding: EdgeInsets.only(top: 200),
           child: GestureDetector(
@@ -38,7 +41,7 @@ class _ProductOverViewScreenState extends State<ProductOverViewScreen> {
             },
           ),
         ),
-      ),
+      ),*/
       appBar: AppBar(
         title: Text('My Shop'),
         actions: [
