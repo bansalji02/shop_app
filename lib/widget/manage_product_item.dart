@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_complete_guide/providers/product.dart';
+import 'package:flutter_complete_guide/providers/products_provider.dart';
+import 'package:flutter_complete_guide/screens/edit_product_screen.dart';
+import 'package:provider/provider.dart';
 
 
 class ManageProductItem extends StatelessWidget {
 
   final String title;
   final String imageUrl;
+  final String id;
 
-  ManageProductItem({ @required this.title,@required this.imageUrl});
+  ManageProductItem({ @required this.title,@required this.imageUrl, @required this.id});
 
 
   @override
@@ -21,8 +26,12 @@ class ManageProductItem extends StatelessWidget {
         width: 100,
         child: Row(
           children: [
-            IconButton(onPressed: (){}, icon: Icon(Icons.edit),),
-            IconButton(onPressed: (){}, icon: Icon(Icons.delete),),
+            IconButton(onPressed: (){
+              Navigator.of(context).pushNamed(EditProductsScreen.routeName, arguments: id);
+            }, icon: Icon(Icons.edit),),
+            IconButton(onPressed: (){
+              Provider.of<ProductsProvider>(context,listen: false).deleteProduct(id);
+            }, icon: Icon(Icons.delete),),
           ],
         ),
       ),
