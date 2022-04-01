@@ -5,7 +5,7 @@ import 'dart:convert';
 
 class ProductsProvider with ChangeNotifier {
   List<Product> _items = [
-    Product(
+   /* Product(
       id: 'p1',
       title: 'Red Shirt',
       description: 'A red shirt - it is pretty red!',
@@ -36,7 +36,7 @@ class ProductsProvider with ChangeNotifier {
       price: 49.99,
       imageUrl:
           'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Cast-Iron-Pan.jpg/1024px-Cast-Iron-Pan.jpg',
-    ),
+    ),*/
   ];
 
   List<Product> get items {
@@ -51,20 +51,52 @@ class ProductsProvider with ChangeNotifier {
     return items.firstWhere((element) => element.id == id);
   }
 
-  Future<void> addProducts(Product product) {
+  Future<void> setAndFetchProduct() async {
+    final url = Uri.parse(
+        'https://shop-app-19327-default-rtdb.firebaseio.com/products.json');
+    try {
+      final response = await https.get(url);
+      final extractedData = json.decode(response.body) as Map<String, dynamic>;
+      final List<Product> loadedProductList = [];
+      extractedData.forEach((prodId, prodData) {
+        loadedProductList.add(
+          Product(
+              id: prodId,
+              imageUrl: prodData['imageUrl'],
+              title: prodData['title'],
+              description: prodData['description'],
+              price: prodData['price'],
+              isFavourite: prodData['isFavorite']),
+        );
+        _items = loadedProductList;
+        notifyListeners();
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  Future<void> addProducts(Product product) async {
     //sending the https request to the server
     final url = Uri.parse(
         'https://shop-app-19327-default-rtdb.firebaseio.com/products.json');
-    https
-        .post(url,
-            body: json.encode({
-              'title': product.title,
-              'description': product.description,
-              'price': product.price,
-              'imageUrl': product.imageUrl,
-              'isFavorite': product.isFavourite
-            }))
-        .then((response) {
+    //here we can also use return https and then function on this future but
+    //here instead we are using the async keyword
+
+    try {
+      final response = await https.post(
+        url,
+        body: json.encode(
+          {
+            'title': product.title,
+            'description': product.description,
+            'price': product.price,
+            'imageUrl': product.imageUrl,
+            'isFavorite': product.isFavourite
+          },
+        ),
+      );
+
       final newProduct = Product(
           id: json.decode(response.body)['name'],
           description: product.description,
@@ -73,11 +105,10 @@ class ProductsProvider with ChangeNotifier {
           title: product.title);
       _items.add(newProduct);
       notifyListeners();
-    }).catchError((error){
+    } catch (error) {
       print(error);
       throw error;
-
-    });
+    }
   }
 
   //making an update product function
