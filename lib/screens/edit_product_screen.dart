@@ -43,18 +43,15 @@ class _EditProductsScreenState extends State<EditProductsScreen> {
     //adding the products to the list
     //making sure that we update the products we already have and not make new products out of them
     if (_editedProduct.id != null) {
-      Provider.of<ProductsProvider>(context, listen: false)
+      await Provider.of<ProductsProvider>(context, listen: false)
           .updateProduct(_editedProduct.id, _editedProduct);
-      setState(() {
-        _isLoading = false;
-      });
-      Navigator.of(context).pop();
+
     } else {
       try {
-        Provider.of<ProductsProvider>(context, listen: false)
+        await Provider.of<ProductsProvider>(context, listen: false)
             .addProducts(_editedProduct);
       } catch (error) {
-        return showDialog(
+        await showDialog(
           context: context,
           builder: (ctx) => AlertDialog(
             title: Text('An error Occured!'),
@@ -69,13 +66,17 @@ class _EditProductsScreenState extends State<EditProductsScreen> {
             ],
           ),
         );
-      } finally {
+      } /*finally {
         setState(() {
           _isLoading = false;
         });
         Navigator.of(context).pop();
-      }
+      }*/
     }
+    setState(() {
+      _isLoading = false;
+    });
+    Navigator.of(context).pop();
   }
 
   var _inItValues = {

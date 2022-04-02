@@ -5,7 +5,7 @@ import 'dart:convert';
 
 class ProductsProvider with ChangeNotifier {
   List<Product> _items = [
-   /* Product(
+    /* Product(
       id: 'p1',
       title: 'Red Shirt',
       description: 'A red shirt - it is pretty red!',
@@ -112,9 +112,22 @@ class ProductsProvider with ChangeNotifier {
   }
 
   //making an update product function
-  void updateProduct(String id, Product product) {
+  Future<void> updateProduct(String id, Product product) async {
     final productIndex = _items.indexWhere((element) => element.id == id);
     if (productIndex >= 0) {
+      final url = Uri.parse(
+          'https://shop-app-19327-default-rtdb.firebaseio.com/products/$id.json');
+      await https.patch(
+        url,
+        body: json.encode(
+          {
+            'title': product.title,
+            'description': product.description,
+            'price': product.price,
+            'imageUrl': product.imageUrl
+          },
+        ),
+      );
       _items[productIndex] = product;
       notifyListeners();
     } else {
