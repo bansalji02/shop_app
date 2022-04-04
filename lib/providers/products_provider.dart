@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_complete_guide/models/http_exceptions.dart';
 import './product.dart';
 import 'package:http/http.dart' as https;
 import 'dart:convert';
@@ -135,8 +136,26 @@ class ProductsProvider with ChangeNotifier {
     }
   }
 
-  void deleteProduct(String id) {
-    _items.removeWhere((element) => element.id == id);
+  void deleteProduct(String id) async{
+    final url = Uri.parse(
+        'https://shop-app-19327-default-rtdb.firebaseio.com/products/$id.json');
+    //here we are extracting the index first and then making an ovjext of the product just so that we can rollback the
+    //delete in case and error occcurs
+
+    final existingProductIndex =
+        _items.indexWhere((element) => element.id == id);
+    var existingProduct = _items[existingProductIndex];
+    _items.removeAt(existingProductIndex);
     notifyListeners();
+
+    final response  =  await  https.delete(url);
+      if(response.statusCode >= 400){
+        _items.insert(existingProductIndex, existingProduct);
+        notifyListeners();
+        throw HttpException('Product could not be deleted!');
+
+      }
+      existingProduct = null;
+
   }
 }
