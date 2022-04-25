@@ -1,3 +1,7 @@
+
+
+
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_complete_guide/models/http_exceptions.dart';
 import './product.dart';
@@ -5,6 +9,8 @@ import 'package:http/http.dart' as https;
 import 'dart:convert';
 
 class ProductsProvider with ChangeNotifier {
+
+
   List<Product> _items = [
     /* Product(
       id: 'p1',
@@ -40,21 +46,29 @@ class ProductsProvider with ChangeNotifier {
     ),*/
   ];
 
+  //recieving the auth token from the constructor
+  final String authToken;
+
+  ProductsProvider(this.authToken ,this._items);//here we have to initialize the list of items just to make sure that we dont loose the previous data
+
+
+
+
   List<Product> get items {
     return [..._items];
   }
 
   List<Product> get favouriteItems {
-    return _items.where((element) => element.isFavourite == true).toList();
+    return _items?.where((element) => element.isFavourite == true).toList();
   }
 
   Product findById(String id) {
-    return items.firstWhere((element) => element.id == id);
+    return items?.firstWhere((element) => element.id == id);
   }
 
   Future<void> setAndFetchProduct() async {
     final url = Uri.parse(
-        'https://shop-app-19327-default-rtdb.firebaseio.com/products.json');
+        'https://shop-app-19327-default-rtdb.firebaseio.com/products.json?auth=$authToken');
     try {
       final response = await https.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
@@ -104,7 +118,7 @@ class ProductsProvider with ChangeNotifier {
           imageUrl: product.imageUrl,
           price: product.price,
           title: product.title);
-      _items.add(newProduct);
+      _items?.add(newProduct);
       notifyListeners();
     } catch (error) {
       print(error);

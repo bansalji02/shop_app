@@ -5,7 +5,7 @@ import 'package:flutter/widgets.dart';
 
 class Auth with ChangeNotifier {
   String _token;
-  DateTime _expiryTime  = DateTime.now();
+  DateTime _expiryTime; // = DateTime.now();
   String _userId;
 
   bool get isAuth {
@@ -13,8 +13,8 @@ class Auth with ChangeNotifier {
   }
 
   String get token {
-    if (_expiryTime.isAfter(DateTime.now()) &&
-        _expiryTime != null &&
+    if (_expiryTime != null &&
+        _expiryTime.isAfter(DateTime.now()) &&
         _token != null) {
       return _token;
     }

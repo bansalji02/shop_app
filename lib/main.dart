@@ -18,42 +18,47 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-        providers: [
-          ChangeNotifierProvider(
-            create: (ctx) => Auth(),
+      providers: [
+        ChangeNotifierProvider.value(
+          value: Auth(),
+        ),
+        ChangeNotifierProxyProvider<Auth, ProductsProvider>(
+          update: (ctx, auth, previousProducts) => ProductsProvider(
+            auth.token,
+            previousProducts.items == null ? [] : previousProducts.items,
+             // previousProducts.items
           ),
-          ChangeNotifierProvider(
-            create: (ctx) => ProductsProvider(),
-          ),
-          ChangeNotifierProvider(
-            create: (ctx) => Cart(),
-          ),
-          ChangeNotifierProvider(
-            create: (ctx) => Orders(),
-          )
-        ],
-        child: Consumer<Auth>(
-          builder: (ctx, authdata, _) => MaterialApp(
-            title: 'MyShop',
-            theme: ThemeData(
-                appBarTheme: const AppBarTheme(
-                  backgroundColor: Color(0xff6d4c41),
-                ),
-                colorScheme: const ColorScheme.light(
-                  primary: Color(0xff6d4c41),
-                  secondary: Color(0xff774210),
-                ),
-                fontFamily: 'Lato'),
-            routes: {
-              ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
-              cartScreen.routename: (ctx) => cartScreen(),
-              OrderScreen.routeName: (ctx) => OrderScreen(),
-              ProductOverViewScreen.routeName: (ctx) => ProductOverViewScreen(),
-              ManageProductsScreen.routename: (ctx) => ManageProductsScreen(),
-              EditProductsScreen.routeName: (ctx) => EditProductsScreen(),
-            },
-            home:authdata.isAuth ? ProductOverViewScreen() :  AuthScreen(),
-          ),
-        ));
+        ),
+        ChangeNotifierProvider.value(
+          value  :Cart(),
+        ),
+        ChangeNotifierProvider.value(
+          value:  Orders(),
+        )
+      ],
+      child: Consumer<Auth>(
+        builder: (ctx, authdata, _) => MaterialApp(
+          title: 'MyShop',
+          theme: ThemeData(
+              appBarTheme: const AppBarTheme(
+                backgroundColor: Color(0xff6d4c41),
+              ),
+              colorScheme: const ColorScheme.light(
+                primary: Color(0xff6d4c41),
+                secondary: Color(0xff774210),
+              ),
+              fontFamily: 'Lato'),
+          routes: {
+            ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
+            cartScreen.routename: (ctx) => cartScreen(),
+            OrderScreen.routeName: (ctx) => OrderScreen(),
+            ProductOverViewScreen.routeName: (ctx) => ProductOverViewScreen(),
+            ManageProductsScreen.routename: (ctx) => ManageProductsScreen(),
+            EditProductsScreen.routeName: (ctx) => EditProductsScreen(),
+          },
+          home: authdata.isAuth ? ProductOverViewScreen() : AuthScreen(),
+        ),
+      ),
+    );
   }
 }
